@@ -1,7 +1,7 @@
 .idea/
 .DS_Store
 .vscode
-Location-Ping-API
 main
+ping-api
 /bin
 /vendor
