@@ -1,0 +1,7 @@
+app:
+    debug: false
+    http_port: 9001
+    read_timeout: 30 # timeout in second
+    write_timeout: 30 # timeout in second
+    idle_timeout: 30 # timeout in second
+    name: location-ping-api
