@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "github.com/rls/ping-api/cmd"
 
 func main() {
-	fmt.Println("Hello world")
+	cmd.Execute()
 }
