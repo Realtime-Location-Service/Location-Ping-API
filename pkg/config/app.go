@@ -3,6 +3,7 @@ package config
 import (
 	"time"
 
+	"github.com/rls/ping-api/utils/consts"
 	"github.com/spf13/viper"
 )
 
@@ -14,6 +15,7 @@ type App struct {
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
 	IdleTimeout  time.Duration
+	CacheType    consts.CacheType
 }
 
 var app = &App{}
@@ -23,9 +25,10 @@ func AppCfg() *App {
 	return app
 }
 
-// LoadApp loads app configuration
-func LoadApp() {
+// LoadAppCfg loads app configuration
+func LoadAppCfg() {
 	app.Debug = viper.GetBool("app.debug")
+	app.CacheType = consts.CacheType(viper.GetString("app.cache_type"))
 	app.HTTPPort = viper.GetInt("app.http_port")
 	app.ReadTimeout = viper.GetDuration("app.read_timeout") * time.Second
 	app.WriteTimeout = viper.GetDuration("app.write_timeout") * time.Second

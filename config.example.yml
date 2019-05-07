@@ -4,4 +4,9 @@ app:
     read_timeout: 30 # timeout in second
     write_timeout: 30 # timeout in second
     idle_timeout: 30 # timeout in second
-    name: location-ping-api
+    cache_type: redis # redis/memcached
+    name: "location-ping-api"
+redis:
+    network: "tcp"
+    addr: ":6379"
+    password: "password123"

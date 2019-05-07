@@ -1,3 +1,3 @@
-// Package config provides the application configuration. 
+// Package config provides all the application configuration.
 // All configurations should be set in consul.
 package config

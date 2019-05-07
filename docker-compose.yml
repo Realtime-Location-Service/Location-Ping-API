@@ -5,3 +5,13 @@ services:
     image: consul:latest
     ports:
       - 8500:8500
+
+  redis:
+    image: 'bitnami/redis:latest'
+    ports:
+      - '6379:6379'
+    environment:
+      - DISABLE_COMMANDS=FLUSHDB,FLUSHALL,CONFIG
+      - REDIS_PASSWORD=password123
+    volumes:
+      - ~/Documents/workspace/rls/redis-persistence:/bitnami/redis/data

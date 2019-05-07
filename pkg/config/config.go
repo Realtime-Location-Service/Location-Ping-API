@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/viper"
 	// this package is necessary to read config from remote consul
+	"github.com/rls/ping-api/utils/consts"
 	_ "github.com/spf13/viper/remote"
 )
 
@@ -32,5 +33,9 @@ func Init() {
 		log.Fatal(fmt.Sprintf("%s named \"%s\"", err.Error(), consulPath))
 	}
 
-	LoadApp()
+	LoadAppCfg()
+
+	if AppCfg().CacheType == consts.Redis {
+		LoadRedisCfg()
+	}
 }
