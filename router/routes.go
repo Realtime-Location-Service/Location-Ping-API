@@ -6,6 +6,10 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/rls/ping-api/pkg/config"
+	"github.com/rls/ping-api/pkg/location"
+	"github.com/rls/ping-api/store/repo"
+	"github.com/rls/ping-api/svc/cache"
 	"github.com/rls/ping-api/utils/error"
 )
 
@@ -14,6 +18,7 @@ var router = chi.NewRouter()
 type errResponse struct {
 	Err *error.Err `json:"err"`
 }
+
 // Route returns the api router
 func Route() http.Handler {
 	router.Use(middleware.Logger)
@@ -44,7 +49,11 @@ func registerRoutes() {
 	})
 }
 
-// TODO: will be implemeneted
 func locationHandler() http.Handler {
-	return nil
+	var locationSvc location.Service
+	cacheSvc := cache.NewCacheService(config.AppCfg().CacheType)
+	locationSvc = location.NewService(repo.NewLocation(cacheSvc))
+	locationSvc = location.NewValidationMiddleware(locationSvc)
+
+	return location.MakeHandler(locationSvc)
 }
