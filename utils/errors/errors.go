@@ -34,6 +34,12 @@ func Cause(err error) error {
 	return errors.Cause(err)
 }
 
+// New returns an error with the supplied message.
+// New also records the stack trace at the point it was called.
+func New(message string) error {
+	return errors.New(message)
+}
+
 const (
 	// ErrNoDataFound is returned when data not found for a request.
 	ErrNoDataFound = "No data found for the request"
