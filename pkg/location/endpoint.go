@@ -9,9 +9,8 @@ import (
 )
 
 type locationRequest struct {
-	Locations []*model.Location
+	Locations []*model.Location `json:"locations" valid:"validate_locations~locations: required parameter missing,required"`
 }
-
 type locationResponse struct {
 	Data interface{} `json:"data,omitempty"`
 	Err  *errors.Err `json:"err,omitempty"`
@@ -20,10 +19,6 @@ type locationResponse struct {
 func makeSaveLocationEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(locationRequest)
-		v, err := svc.Save(ctx, &req)
-		if err != nil {
-			return v, err
-		}
-		return v, nil
+		return svc.Save(ctx, &req)
 	}
 }

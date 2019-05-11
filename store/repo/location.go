@@ -1,7 +1,9 @@
 package repo
 
-import "github.com/rls/ping-api/store/model"
-import "github.com/rls/ping-api/svc/cache"
+import (
+	"github.com/rls/ping-api/store/model"
+	"github.com/rls/ping-api/svc/cache"
+)
 
 // Location ...
 type Location struct {
