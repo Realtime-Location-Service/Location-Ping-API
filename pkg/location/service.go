@@ -4,9 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/rls/ping-api/store/model"
 	"github.com/rls/ping-api/store/repo"
-	errors "github.com/rls/ping-api/utils/error"
+	"github.com/rls/ping-api/utils/errors"
 )
 
 // Service is the interface that provides recipes.
@@ -18,13 +17,12 @@ type service struct {
 	repo repo.ILocation
 }
 
-// Save method saves latlong into redis
-// TODO: need to implement
+// Save method saves geo locations
 func (svc *service) Save(ctx context.Context, r *locationRequest) (*locationResponse, error) {
-	if err := svc.repo.Save(r.UserID, &model.Location{}); err != nil {
-		return &locationResponse{nil, errors.NewErr(http.StatusBadRequest, "Error")}, nil
+	if err := svc.repo.Save("locations", r.Locations...); err != nil {
+		return &locationResponse{nil, errors.NewErr(http.StatusBadRequest, errors.Cause(err).Error())}, err
 	}
-	return &locationResponse{"Done", nil}, nil
+	return &locationResponse{"Successfully saved locations", nil}, nil
 }
 
 // NewService creates a location service with necessary dependencies.

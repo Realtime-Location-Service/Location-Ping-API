@@ -10,13 +10,13 @@ import (
 	"github.com/rls/ping-api/pkg/location"
 	"github.com/rls/ping-api/store/repo"
 	"github.com/rls/ping-api/svc/cache"
-	"github.com/rls/ping-api/utils/error"
+	"github.com/rls/ping-api/utils/errors"
 )
 
 var router = chi.NewRouter()
 
 type errResponse struct {
-	Err *error.Err `json:"err"`
+	Err *errors.Err `json:"err"`
 }
 
 // Route returns the api router
@@ -27,14 +27,14 @@ func Route() http.Handler {
 	router.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; utf8")
 		w.WriteHeader(http.StatusNotFound)
-		err := errResponse{error.NewErr(http.StatusNotFound, "Route not found!")}
+		err := errResponse{errors.NewErr(http.StatusNotFound, "Route not found!")}
 		json.NewEncoder(w).Encode(err)
 	})
 
 	router.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; utf8")
 		w.WriteHeader(http.StatusMethodNotAllowed)
-		err := errResponse{error.NewErr(http.StatusMethodNotAllowed, "Method not allowed!")}
+		err := errResponse{errors.NewErr(http.StatusMethodNotAllowed, "Method not allowed!")}
 		json.NewEncoder(w).Encode(err)
 	})
 

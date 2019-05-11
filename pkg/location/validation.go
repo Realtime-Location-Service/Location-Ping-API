@@ -6,7 +6,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 
-	errors "github.com/rls/ping-api/utils/error"
+	"github.com/rls/ping-api/utils/errors"
 )
 
 type validationMiddleware struct {

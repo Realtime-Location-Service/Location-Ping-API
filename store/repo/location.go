@@ -8,7 +8,7 @@ type Location struct {
 	cacheSvc cache.ICacheService
 }
 
-// Save ...
+// Save adds geo locations in cache
 func (l *Location) Save(key string, locations ...*model.Location) error {
 	return l.cacheSvc.GeoAdd(key, locations...)
 }

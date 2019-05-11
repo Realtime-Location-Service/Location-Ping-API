@@ -1,9 +1,13 @@
-package error
+package errors
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/pkg/errors"
+)
 
 // Err provides the flexibilty to structure the error
-// can be used for err error code
+// can be used for error code
 type Err struct {
 	StatusCode int    `json:"statusCode"`
 	StatusText string `json:"statusText"`
@@ -17,6 +21,17 @@ func NewErr(statusCode int, errMsg string) *Err {
 		StatusText: http.StatusText(statusCode),
 		Message:    errMsg,
 	}
+}
+
+// Wrap returns an error annotating err with a stack trace at the point Wrap is called,
+// and the supplied message. If err is nil, Wrap returns nil.
+func Wrap(err error, message string) error {
+	return errors.Wrap(err, message)
+}
+
+// Cause returns the underlying cause of the error, if possible
+func Cause(err error) error {
+	return errors.Cause(err)
 }
 
 const (

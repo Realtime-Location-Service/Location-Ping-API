@@ -5,11 +5,11 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/rls/ping-api/store/model"
-	errors "github.com/rls/ping-api/utils/error"
+	"github.com/rls/ping-api/utils/errors"
 )
 
 type locationRequest struct {
-	model.Location
+	Locations []*model.Location
 }
 
 type locationResponse struct {
