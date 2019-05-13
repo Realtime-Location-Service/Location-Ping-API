@@ -19,7 +19,7 @@ type service struct {
 
 // Save method saves geo locations
 func (svc *service) Save(ctx context.Context, r *locationRequest) (*locationResponse, error) {
-	if err := svc.repo.Save("locations", r.Locations...); err != nil {
+	if err := svc.repo.Save(r.Referrer, r.Locations); err != nil {
 		return &locationResponse{nil, errors.NewErr(http.StatusBadRequest, errors.Cause(err).Error())}, err
 	}
 	return &locationResponse{"Successfully saved locations", nil}, nil

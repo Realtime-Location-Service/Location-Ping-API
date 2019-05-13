@@ -9,7 +9,9 @@ import (
 )
 
 type locationRequest struct {
-	Locations []*model.Location `json:"locations" valid:"validate_locations~locations: required parameter missing,required"`
+	UserID    string          `json:"user_id" valid:"required"`
+	Referrer  string          `json:"referrer" valid:"required"`
+	Locations *model.Location `json:"locations" valid:"required"`
 }
 type locationResponse struct {
 	Data interface{} `json:"data,omitempty"`

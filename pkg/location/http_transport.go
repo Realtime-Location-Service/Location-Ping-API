@@ -41,6 +41,8 @@ func decodeSaveLocationRequest(_ context.Context, r *http.Request) (interface{},
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return nil, err
 	}
+	req.Referrer = r.Header.Get("RLS-Referrer")
+	req.Locations.UserID = req.UserID
 
 	return req, nil
 }
