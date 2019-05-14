@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/rls/ping-api/conn/cache"
 	"github.com/rls/ping-api/pkg/config"
 	"github.com/rls/ping-api/router"
 
@@ -20,8 +21,14 @@ import (
 var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Start API server",
-	Long:  `Start the http-json API server of location-ping service`,
+	Long:  `Start the http-json API server of location-ping-api`,
 	Run:   serve,
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		if err := cache.Connect(config.AppCfg().CacheType); err != nil {
+			log.Fatal("Error happened while connecting to caching server, reason", err)
+		}
+		return nil
+	},
 }
 
 func init() {

@@ -11,8 +11,8 @@ When I start programming back in 2011-ish, I start to hear DHL started showing r
 Why not solve all those problem in a single place? In that way, development team can focus on only the mission-critical things or more other creative stuffs :) This repository set is aimed for that purpose (e.g., solve in 1 place). Hope you help me.
 
 # How to run
-[ Upcoming ]
+`./run.sh`
 
 # How to test
-[ Upcoming ]
+`go test ./... -v`
 
