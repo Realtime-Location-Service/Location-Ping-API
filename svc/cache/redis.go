@@ -16,7 +16,7 @@ type Redis struct {
 func (r *Redis) Get(key string, userIDs ...string) (map[string]*model.Location, error) {
 	geoPos, err := r.redis.GeoPos(key, userIDs...).Result()
 	if err != nil {
-		return nil, errors.Wrap(err, "error happend while getting geo location from redis")
+		return nil, errors.Wrap(err, errors.ErrGettingGeoLocation)
 	}
 	return transformToUserLocation(userIDs, geoPos), nil
 }
@@ -25,7 +25,7 @@ func (r *Redis) Get(key string, userIDs ...string) (map[string]*model.Location, 
 // in case of error returns error with stack trace
 func (r *Redis) GeoAdd(key string, locations ...*model.Location) error {
 	if cmd := r.redis.GeoAdd(key, transformToGeoLocation(locations...)...); cmd.Err() != nil {
-		return errors.Wrap(cmd.Err(), "error happend while adding geo location to redis")
+		return errors.Wrap(cmd.Err(), errors.ErrSavingGeoLocation)
 	}
 	return nil
 }

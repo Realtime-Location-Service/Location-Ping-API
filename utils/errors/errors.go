@@ -43,4 +43,8 @@ func New(message string) error {
 const (
 	// ErrNoDataFound is returned when data not found for a request.
 	ErrNoDataFound = "No data found for the request"
+	// ErrGettingGeoLocation ...
+	ErrGettingGeoLocation = "error happend while getting geo locations from redis"
+	// ErrSavingGeoLocation ...
+	ErrSavingGeoLocation = "error happend while adding geo location to redis"
 )
