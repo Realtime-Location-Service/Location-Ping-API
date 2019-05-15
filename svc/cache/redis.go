@@ -12,9 +12,13 @@ type Redis struct {
 	redis *cache.Redis
 }
 
-// Get ...
-func (r *Redis) Get(key string) (*model.Location, error) {
-	return nil, nil
+// Get returns locations of the users
+func (r *Redis) Get(key string, userIDs ...string) (map[string]*model.Location, error) {
+	geoPos, err := r.redis.GeoPos(key, userIDs...).Result()
+	if err != nil {
+		return nil, errors.Wrap(err, "error happend while getting geo location from redis")
+	}
+	return transformToUserLocation(userIDs, geoPos), nil
 }
 
 // GeoAdd adds locations in redis

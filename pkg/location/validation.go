@@ -24,3 +24,10 @@ func (vmw validationMiddleware) Save(ctx context.Context, lr *locationRequest) (
 	}
 	return vmw.svc.Save(ctx, lr)
 }
+
+func (vmw validationMiddleware) Get(ctx context.Context, lr *getLocationRequest) (*locationResponse, error) {
+	if _, err := govalidator.ValidateStruct(lr); err != nil {
+		return &locationResponse{Data: nil, Err: errors.NewErr(http.StatusBadRequest, err.Error())}, nil
+	}
+	return vmw.svc.Get(ctx, lr)
+}
