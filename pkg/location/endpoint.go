@@ -26,7 +26,10 @@ type locationResponse struct {
 
 func makeSaveLocationEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(locationRequest)
+		req, ok := request.(locationRequest)
+		if !ok {
+			return request, nil
+		}
 		return svc.Save(ctx, &req)
 	}
 }
