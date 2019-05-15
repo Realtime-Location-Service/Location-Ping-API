@@ -13,6 +13,12 @@ type locationRequest struct {
 	Referrer  string          `json:"referrer" valid:"required"`
 	Locations *model.Location `json:"locations" valid:"required"`
 }
+
+type getLocationRequest struct {
+	UserIDs  []string `json:"user_ids" valid:"required"`
+	Referrer string   `json:"referrer" valid:"required"`
+}
+
 type locationResponse struct {
 	Data interface{} `json:"data,omitempty"`
 	Err  *errors.Err `json:"err,omitempty"`
@@ -22,5 +28,12 @@ func makeSaveLocationEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(locationRequest)
 		return svc.Save(ctx, &req)
+	}
+}
+
+func makeGetLocationEndpoint(svc Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(getLocationRequest)
+		return svc.Get(ctx, &req)
 	}
 }

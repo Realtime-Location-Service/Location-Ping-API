@@ -11,6 +11,7 @@ import (
 // Service is the interface that provides recipes.
 type Service interface {
 	Save(context.Context, *locationRequest) (*locationResponse, error)
+	Get(context.Context, *getLocationRequest) (*locationResponse, error)
 }
 
 type service struct {
@@ -23,6 +24,15 @@ func (svc *service) Save(ctx context.Context, r *locationRequest) (*locationResp
 		return &locationResponse{nil, errors.NewErr(http.StatusBadRequest, errors.Cause(err).Error())}, err
 	}
 	return &locationResponse{"Successfully saved locations", nil}, nil
+}
+
+// Get method returns users geo locations
+func (svc *service) Get(ctx context.Context, r *getLocationRequest) (*locationResponse, error) {
+	locations, err := svc.repo.Get(r.Referrer, r.UserIDs)
+	if err != nil {
+		return &locationResponse{nil, errors.NewErr(http.StatusBadRequest, errors.Cause(err).Error())}, err
+	}
+	return &locationResponse{locations, nil}, nil
 }
 
 // NewService creates a location service with necessary dependencies.

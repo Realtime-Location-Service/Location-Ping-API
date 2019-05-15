@@ -14,3 +14,15 @@ func transformToGeoLocation(locations ...*model.Location) []*redis.GeoLocation {
 	}
 	return geoLocs
 }
+
+func transformToUserLocation(userIDs []string, geoPos []*redis.GeoPos) map[string]*model.Location {
+	locations := map[string]*model.Location{}
+	for i, pos := range geoPos {
+		if pos == nil {
+			locations[userIDs[i]] = nil
+			continue
+		}
+		locations[userIDs[i]] = &model.Location{Lat: pos.Latitude, Lon: pos.Longitude}
+	}
+	return locations
+}

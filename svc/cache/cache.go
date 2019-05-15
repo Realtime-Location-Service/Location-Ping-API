@@ -7,7 +7,7 @@ import (
 
 // ICacheService ...
 type ICacheService interface {
-	Get(key string) (*model.Location, error)
+	Get(key string, userIDs ...string) (map[string]*model.Location, error)
 	GeoAdd(key string, locations ...*model.Location) error
 }
 
