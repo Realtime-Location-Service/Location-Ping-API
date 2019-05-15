@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"github.com/rls/ping-api/utils/errors"
 )
 
 // MakeHandler returns a handler for the location service.
@@ -45,9 +46,8 @@ func encodeResponse(_ context.Context, w http.ResponseWriter, response interface
 func decodeSaveLocationRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req locationRequest
 
-	// TODO: need to handle invalid types
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		return nil, err
+		return &locationResponse{nil, errors.NewErr(http.StatusBadRequest, err.Error())}, nil
 	}
 	req.Referrer = r.Header.Get("RLS-Referrer")
 	req.Locations.UserID = req.UserID
