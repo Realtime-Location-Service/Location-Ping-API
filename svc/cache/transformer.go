@@ -26,3 +26,12 @@ func transformToUserLocation(userIDs []string, geoPos []*redis.GeoPos) map[strin
 	}
 	return locations
 }
+
+func transform(locs []redis.GeoLocation) []*model.Location {
+	locations := []*model.Location{}
+	for _, l := range locs {
+		locations = append(locations, &model.Location{Lat: l.Latitude, Lon: l.Longitude,
+			Dist: l.Dist, UserID: l.Name, GeoHash: l.GeoHash})
+	}
+	return locations
+}

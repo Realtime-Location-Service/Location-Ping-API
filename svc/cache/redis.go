@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"github.com/go-redis/redis"
 	"github.com/rls/ping-api/conn/cache"
 	"github.com/rls/ping-api/pkg/config"
 	"github.com/rls/ping-api/store/model"
@@ -28,6 +29,24 @@ func (r *Redis) GeoAdd(key string, locations ...*model.Location) error {
 		return errors.Wrap(cmd.Err(), errors.ErrSavingGeoLocation)
 	}
 	return nil
+}
+
+// Search returns relevant  locations within radius
+func (r *Redis) Search(key string, radius *model.Radius) ([]*model.Location, error) {
+	res, err := r.redis.GeoRadius(key, radius.Lon, radius.Lat, &redis.GeoRadiusQuery{
+		Radius:      radius.Val,
+		Unit:        radius.Unit,
+		WithGeoHash: true,
+		WithCoord:   true,
+		WithDist:    true,
+		Sort:        "ASC",
+		Count:       radius.Limit,
+	}).Result()
+
+	if err != nil {
+		return nil, errors.Wrap(err, errors.ErrGeoRadiusSearch)
+	}
+	return transform(res), nil
 }
 
 // NewRedis returns redis client
