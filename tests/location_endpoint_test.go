@@ -142,3 +142,64 @@ func TestLocationsGet(t *testing.T) {
 		}
 	}
 }
+
+func TestLocationsSearch(t *testing.T) {
+	srv := httptest.NewServer(eps)
+	defer srv.Close()
+
+	qs := map[string]string{
+		"missing_lat":           `radius=10&lat=&lon=90.422827&unit=km`,
+		"missing_lon":           `radius=10&lat=23.834314&lon=&unit=km`,
+		"missing_radius":        `radius=&lat=23.834314&lon=90.422827&unit=km`,
+		"invalid_unit":          `radius=10&lat=23.834314&lon=90.422827&unit=`,
+		"missing_referrer":      `radius=10&lat=23.834314&lon=90.422827&unit=km`,
+		"valid_data":            `radius=1&lat=23.834314&lon=90.422827&unit=km`,
+		"valid_data_with_limit": `radius=1&lat=23.834314&lon=90.422827&unit=km&limit=1`,
+		"empty_data":            `radius=10&lat=23.834314&lon=90.422827&unit=ft`,
+	}
+
+	res := map[string]string{
+		"valid_data":            `{"data":[{"user_id":"3","lat":23.835898043100038,"lon":90.42310506105423,"distance":0.1784,"geo_hash":4011392607786693},{"user_id":"4","lat":23.835021029578904,"lon":90.4253688454628,"distance":0.2703,"geo_hash":4011392607882153},{"user_id":"1","lat":23.831145440926278,"lon":90.42508453130722,"distance":0.4207,"geo_hash":4011392603947458},{"user_id":"5","lat":23.829751344288645,"lon":90.4310604929924,"distance":0.9794,"geo_hash":4011392609287438}]}`,
+		"valid_data_with_limit": `{"data":[{"user_id":"3","lat":23.835898043100038,"lon":90.42310506105423,"distance":0.1784,"geo_hash":4011392607786693}]}`,
+		"empty_data":            `{"data":[]}`,
+	}
+
+	url := srv.URL + "/v1/locations/users?"
+
+	for _, testcase := range []struct {
+		method, url, name, response string
+		want                        int
+	}{
+		{"GET", url + qs["missing_lat"], "missing_lat_test", "", http.StatusBadRequest},
+		{"GET", url + qs["missing_lon"], "missing_lon_test", "", http.StatusBadRequest},
+		{"GET", url + qs["missing_radius"], "missing_radius_test", "", http.StatusBadRequest},
+		{"GET", url + qs["invalid_unit"], "invalid_unit_test", "", http.StatusBadRequest},
+		{"GET", url + qs["missing_referrer"], "missing_referrer_test", "", http.StatusBadRequest},
+		{"GET", url + qs["valid_data"], "valid_data_test", res["valid_data"], http.StatusOK},
+		{"GET", url + qs["valid_data_with_limit"], "valid_data_with_limit_test", res["valid_data_with_limit"], http.StatusOK},
+		{"GET", url + qs["empty_data"], "empty_data_test", res["empty_data"], http.StatusOK},
+	} {
+		req, _ := http.NewRequest(testcase.method, testcase.url, nil)
+
+		if testcase.name != "missing_referrer_test" {
+			req.Header.Set("RLS-Referrer", "test.abcd.com")
+		}
+
+		resp, _ := http.DefaultClient.Do(req)
+
+		if want, have := testcase.want, resp.StatusCode; want != have {
+			t.Errorf("%s %s %s: want %d, have %d", testcase.name, testcase.method, testcase.url, want, have)
+		}
+
+		// skipping response structure test for all except 200
+		if testcase.want != resp.StatusCode || testcase.want != http.StatusOK {
+			continue
+		}
+
+		body, _ := ioutil.ReadAll(resp.Body)
+
+		if want, have := strings.TrimSpace(testcase.response), strings.TrimSpace(string(body)); want != have {
+			t.Errorf("%s %s: want %q, have %q", testcase.method, testcase.url, want, have)
+		}
+	}
+}
