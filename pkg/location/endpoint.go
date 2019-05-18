@@ -19,6 +19,14 @@ type getLocationRequest struct {
 	Referrer string   `json:"referrer" valid:"required"`
 }
 
+type searchLocationRequest struct {
+	model.Location
+	Radius   float64 `json:"radius" valid:"required"`
+	Unit     string  `json:"unit" valid:"radius_unit_tag~unit: invalid radius unit, required"`
+	Referrer string  `json:"referrer" valid:"required"`
+	Limit    int     `json:"limit" valid:"-"`
+}
+
 type locationResponse struct {
 	Data interface{} `json:"data,omitempty"`
 	Err  *errors.Err `json:"err,omitempty"`
@@ -38,5 +46,15 @@ func makeGetLocationEndpoint(svc Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(getLocationRequest)
 		return svc.Get(ctx, &req)
+	}
+}
+
+func makeSearchLocationEndpoint(svc Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req, ok := request.(searchLocationRequest)
+		if !ok {
+			return request, nil
+		}
+		return svc.Search(ctx, &req)
 	}
 }

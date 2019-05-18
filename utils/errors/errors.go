@@ -44,7 +44,11 @@ const (
 	// ErrNoDataFound is returned when data not found for a request.
 	ErrNoDataFound = "No data found for the request"
 	// ErrGettingGeoLocation ...
-	ErrGettingGeoLocation = "error happend while getting geo locations from redis"
+	ErrGettingGeoLocation = "Error happend while getting geo locations from redis"
 	// ErrSavingGeoLocation ...
-	ErrSavingGeoLocation = "error happend while adding geo location to redis"
+	ErrSavingGeoLocation = "Error happend while adding geo location to redis"
+	// ErrParsingQueryString ...
+	ErrParsingQueryString = "Error happend while parsing query string"
+	// ErrGeoRadiusSearch ...
+	ErrGeoRadiusSearch = "Error happend while searching geo locations from redis"
 )

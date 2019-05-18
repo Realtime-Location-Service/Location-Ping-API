@@ -20,6 +20,11 @@ func (l *Location) Get(key string, userIDs []string) (map[string]*model.Location
 	return l.cacheSvc.Get(key, getUniqueIDs(userIDs)...)
 }
 
+// Search returns users locations within radius
+func (l *Location) Search(key string, radius *model.Radius) ([]*model.Location, error) {
+	return l.cacheSvc.Search(key, radius)
+}
+
 // NewLocation returns a new location repo
 func NewLocation(cacheSvc cache.ICacheService) ILocation {
 	return &Location{cacheSvc}
