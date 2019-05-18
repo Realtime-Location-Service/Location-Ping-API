@@ -52,8 +52,14 @@ func encodeResponse(_ context.Context, w http.ResponseWriter, response interface
 	return json.NewEncoder(w).Encode(res)
 }
 
-func decodeSaveLocationRequest(_ context.Context, r *http.Request) (interface{}, error) {
+func decodeSaveLocationRequest(_ context.Context, r *http.Request) (i interface{}, e error) {
 	var req locationRequest
+
+	defer func() {
+		if r := recover(); r != nil {
+			i, e = &locationResponse{nil, errors.NewErr(http.StatusBadRequest, errors.ErrInvalidJSON)}, nil
+		}
+	}()
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return &locationResponse{nil, errors.NewErr(http.StatusBadRequest, err.Error())}, nil

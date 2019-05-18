@@ -51,4 +51,6 @@ const (
 	ErrParsingQueryString = "Error happend while parsing query string"
 	// ErrGeoRadiusSearch ...
 	ErrGeoRadiusSearch = "Error happend while searching geo locations from redis"
+	// ErrInvalidJSON ...
+	ErrInvalidJSON = "Invalid json format"
 )
