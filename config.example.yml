@@ -5,6 +5,7 @@ app:
     write_timeout: 30 # timeout in second
     idle_timeout: 30 # timeout in second
     cache_type: redis # redis/memcached
+    logger_type: kitlogger # kitlogger/logrus
     name: "location-ping-api"
 redis:
     network: "tcp"

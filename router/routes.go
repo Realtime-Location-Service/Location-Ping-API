@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/rls/ping-api/pkg/config"
 	"github.com/rls/ping-api/pkg/location"
+	"github.com/rls/ping-api/pkg/logger"
 	"github.com/rls/ping-api/store/repo"
 	"github.com/rls/ping-api/svc/cache"
 	"github.com/rls/ping-api/utils/errors"
@@ -54,6 +55,8 @@ func locationHandler() http.Handler {
 	cacheSvc := cache.NewCacheService(config.AppCfg().CacheType)
 	locationSvc = location.NewService(repo.NewLocation(cacheSvc))
 	locationSvc = location.NewValidationMiddleware(locationSvc)
+	logger := logger.New(config.AppCfg().LoggerType)
+	locationSvc = location.NewLoggingMiddleware(logger, locationSvc)
 
 	return location.MakeHandler(locationSvc)
 }
