@@ -16,6 +16,7 @@ type App struct {
 	WriteTimeout time.Duration
 	IdleTimeout  time.Duration
 	CacheType    consts.CacheType
+	LoggerType   consts.LoggerType
 }
 
 var app = &App{}
@@ -29,6 +30,7 @@ func AppCfg() *App {
 func LoadAppCfg() {
 	app.Debug = viper.GetBool("app.debug")
 	app.CacheType = consts.CacheType(viper.GetString("app.cache_type"))
+	app.LoggerType = consts.LoggerType(viper.GetString("app.logger_type"))
 	app.HTTPPort = viper.GetInt("app.http_port")
 	app.ReadTimeout = viper.GetDuration("app.read_timeout") * time.Second
 	app.WriteTimeout = viper.GetDuration("app.write_timeout") * time.Second

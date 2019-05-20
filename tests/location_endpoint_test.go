@@ -16,6 +16,7 @@ import (
 )
 
 var eps http.Handler
+var testDomain string
 
 func setup() {
 	os.Setenv("PING_API_CONSUL_URL", "127.0.0.1:8500")
@@ -23,6 +24,8 @@ func setup() {
 	config.Init()
 	cc.ConnectRedis()
 	eps = router.Route()
+
+	testDomain = "test.abcde.com"
 }
 func TestMain(m *testing.M) {
 	setup()
@@ -53,11 +56,25 @@ func TestLocationsSave(t *testing.T) {
 					"lon": 90.425085
 				}
 		}`),
-		"valid": []byte(`{
+		"valid1": []byte(`{
 			"user_id": "1",
 			"locations": {
 					"lat": 23.831146,
 					"lon": 90.425085
+				}
+		}`),
+		"valid2": []byte(`{
+			"user_id": "2",
+			"locations": {
+					"lat": 23.834314,
+					"lon": 90.422827
+				}
+		}`),
+		"valid3": []byte(`{
+			"user_id": "3",
+			"locations": {
+					"lat": 23.835899,
+					"lon": 90.423106
 				}
 		}`),
 	}
@@ -72,12 +89,14 @@ func TestLocationsSave(t *testing.T) {
 		{"POST", url, "invalid_user_id_test", payloads["invalid_user_id"], http.StatusBadRequest},
 		{"POST", url, "invalid_locations_test", payloads["invalid_locations"], http.StatusBadRequest},
 		{"POST", url, "invalid_referrer_test", payloads["invalid_referrer"], http.StatusBadRequest},
-		{"POST", url, "valid_payload_test", payloads["valid"], http.StatusOK},
+		{"POST", url, "valid_payload_test", payloads["valid1"], http.StatusOK},
+		{"POST", url, "valid_payload_test", payloads["valid2"], http.StatusOK},
+		{"POST", url, "valid_payload_test", payloads["valid3"], http.StatusOK},
 	} {
 		req, _ := http.NewRequest(testcase.method, testcase.url, bytes.NewBuffer(testcase.body))
 
 		if testcase.name != "invalid_referrer_test" {
-			req.Header.Set("RLS-Referrer", "test.abcd.com")
+			req.Header.Set("RLS-Referrer", testDomain)
 		}
 
 		resp, _ := http.DefaultClient.Do(req)
@@ -121,7 +140,7 @@ func TestLocationsGet(t *testing.T) {
 		req, _ := http.NewRequest(testcase.method, testcase.url, nil)
 
 		if testcase.name != "invalid_referrer_test" {
-			req.Header.Set("RLS-Referrer", "test.abcd.com")
+			req.Header.Set("RLS-Referrer", testDomain)
 		}
 
 		resp, _ := http.DefaultClient.Do(req)
@@ -155,12 +174,12 @@ func TestLocationsSearch(t *testing.T) {
 		"missing_referrer":      `radius=10&lat=23.834314&lon=90.422827&unit=km`,
 		"valid_data":            `radius=1&lat=23.834314&lon=90.422827&unit=km`,
 		"valid_data_with_limit": `radius=1&lat=23.834314&lon=90.422827&unit=km&limit=1`,
-		"empty_data":            `radius=10&lat=23.834314&lon=90.422827&unit=ft`,
+		"empty_data":            `radius=10&lat=23.934314&lon=90.822827&unit=ft`,
 	}
 
 	res := map[string]string{
-		"valid_data":            `{"data":[{"user_id":"3","lat":23.835898043100038,"lon":90.42310506105423,"distance":0.1784,"geo_hash":4011392607786693},{"user_id":"4","lat":23.835021029578904,"lon":90.4253688454628,"distance":0.2703,"geo_hash":4011392607882153},{"user_id":"1","lat":23.831145440926278,"lon":90.42508453130722,"distance":0.4207,"geo_hash":4011392603947458},{"user_id":"5","lat":23.829751344288645,"lon":90.4310604929924,"distance":0.9794,"geo_hash":4011392609287438}]}`,
-		"valid_data_with_limit": `{"data":[{"user_id":"3","lat":23.835898043100038,"lon":90.42310506105423,"distance":0.1784,"geo_hash":4011392607786693}]}`,
+		"valid_data":            `{"data":[{"user_id":"2","lat":23.83431384237545,"lon":90.42282611131668,"distance":0.0001,"geo_hash":4011392605551972},{"user_id":"3","lat":23.835898043100038,"lon":90.42310506105423,"distance":0.1784,"geo_hash":4011392607786693},{"user_id":"1","lat":23.831145440926278,"lon":90.42508453130722,"distance":0.4207,"geo_hash":4011392603947458}]}`,
+		"valid_data_with_limit": `{"data":[{"user_id":"2","lat":23.83431384237545,"lon":90.42282611131668,"distance":0.0001,"geo_hash":4011392605551972}]}`,
 		"empty_data":            `{"data":[]}`,
 	}
 
@@ -182,7 +201,7 @@ func TestLocationsSearch(t *testing.T) {
 		req, _ := http.NewRequest(testcase.method, testcase.url, nil)
 
 		if testcase.name != "missing_referrer_test" {
-			req.Header.Set("RLS-Referrer", "test.abcd.com")
+			req.Header.Set("RLS-Referrer", testDomain)
 		}
 
 		resp, _ := http.DefaultClient.Do(req)
@@ -199,7 +218,7 @@ func TestLocationsSearch(t *testing.T) {
 		body, _ := ioutil.ReadAll(resp.Body)
 
 		if want, have := strings.TrimSpace(testcase.response), strings.TrimSpace(string(body)); want != have {
-			t.Errorf("%s %s: want %q, have %q", testcase.method, testcase.url, want, have)
+			t.Errorf("%s %s: want %q, have %q\n", testcase.method, testcase.url, want, have)
 		}
 	}
 }
