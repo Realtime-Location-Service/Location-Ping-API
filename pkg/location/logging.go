@@ -13,7 +13,7 @@ type loggingMiddleware struct {
 	svc    Service
 }
 
-// NewLoggingMiddleware returns a new instance of a campaign logging middleware.
+// NewLoggingMiddleware returns a new instance of a location logging middleware.
 func NewLoggingMiddleware(logger log.Logger, svc Service) Service {
 	return &loggingMiddleware{logger, svc}
 }

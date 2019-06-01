@@ -9,7 +9,7 @@ import (
 	"github.com/rls/ping-api/utils/errors"
 )
 
-// Service is the interface that provides recipes.
+// Service is the interface that provides locations
 type Service interface {
 	Save(context.Context, *locationRequest) (*locationResponse, error)
 	Get(context.Context, *getLocationRequest) (*locationResponse, error)
