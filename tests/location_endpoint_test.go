@@ -12,6 +12,7 @@ import (
 	"github.com/rls/ping-api/router"
 
 	cc "github.com/rls/ping-api/conn/cache"
+	"github.com/rls/ping-api/conn/queue"
 	"github.com/rls/ping-api/pkg/config"
 )
 
@@ -23,6 +24,7 @@ func setup() {
 	os.Setenv("PING_API_CONSUL_PATH", "ping-api")
 	config.Init()
 	cc.ConnectRedis()
+	queue.ConnectRabbitMQ()
 	eps = router.Route()
 
 	testDomain = "test.abcde.com"
@@ -196,7 +198,7 @@ func TestLocationsSearch(t *testing.T) {
 		{"GET", url + qs["missing_referrer"], "missing_referrer_test", "", http.StatusBadRequest},
 		{"GET", url + qs["valid_data"], "valid_data_test", res["valid_data"], http.StatusOK},
 		{"GET", url + qs["valid_data_with_limit"], "valid_data_with_limit_test", res["valid_data_with_limit"], http.StatusOK},
-		{"GET", url + qs["empty_data"], "empty_data_test", res["empty_data"], http.StatusOK},
+		{"GET", url + qs["empty_data"], "empty_data_test", res["empty_data"], http.StatusNotFound},
 	} {
 		req, _ := http.NewRequest(testcase.method, testcase.url, nil)
 

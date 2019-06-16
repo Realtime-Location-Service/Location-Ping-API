@@ -3,11 +3,12 @@ version: '3'
 services:
   consul:
     image: consul:latest
+    container_name: consul_dev
     ports:
       - 8500:8500
-
   redis:
     image: 'bitnami/redis:latest'
+    container_name: redis_dev
     ports:
       - '6379:6379'
     environment:
@@ -15,3 +16,13 @@ services:
       - REDIS_PASSWORD=password123
     volumes:
       - ~/Documents/workspace/rls/redis-persistence:/bitnami/redis/data
+  rabbitmq:
+    image: 'rabbitmq:latest'
+    container_name: rabbitmq_dev
+    ports:
+      - '5672:5672'
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=test_rabbit
+    volumes:
+      - ~/Documents/workspace/rls/rabbitmq-persistence:/var/lib/rabbitmq    

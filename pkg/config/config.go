@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/spf13/viper"
-	// this package is necessary to read config from remote consul
 	"github.com/rls/ping-api/utils/consts"
+	"github.com/spf13/viper"
+
+	// this package is necessary to read config from remote consul
 	_ "github.com/spf13/viper/remote"
 )
 
@@ -37,5 +38,9 @@ func Init() {
 
 	if AppCfg().CacheType == consts.Redis {
 		LoadRedisCfg()
+	}
+
+	if AppCfg().QueueType == consts.RabbitMQ {
+		LoadRbbitMQCfg()
 	}
 }

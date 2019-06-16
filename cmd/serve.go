@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/rls/ping-api/conn/cache"
+	"github.com/rls/ping-api/conn/queue"
 	"github.com/rls/ping-api/pkg/config"
 	"github.com/rls/ping-api/router"
 
@@ -25,7 +26,10 @@ var serveCmd = &cobra.Command{
 	Run:   serve,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		if err := cache.Connect(config.AppCfg().CacheType); err != nil {
-			log.Fatal("Error happened while connecting to caching server, reason", err)
+			log.Fatal("Error happened while connecting to caching server, reason: ", err)
+		}
+		if err := queue.Connect(config.AppCfg().QueueType); err != nil {
+			log.Fatal("Error happened while connecting to queue server, reason: ", err)
 		}
 		return nil
 	},

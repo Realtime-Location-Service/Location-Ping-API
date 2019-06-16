@@ -11,6 +11,7 @@ import (
 	"github.com/rls/ping-api/pkg/logger"
 	"github.com/rls/ping-api/store/repo"
 	"github.com/rls/ping-api/svc/cache"
+	"github.com/rls/ping-api/svc/queue"
 	"github.com/rls/ping-api/utils/errors"
 )
 
@@ -53,7 +54,8 @@ func registerRoutes() {
 func locationHandler() http.Handler {
 	var locationSvc location.Service
 	cacheSvc := cache.NewCacheService(config.AppCfg().CacheType)
-	locationSvc = location.NewService(repo.NewLocation(cacheSvc))
+	queueSvc := queue.NewQueueService(config.AppCfg().QueueType)
+	locationSvc = location.NewService(repo.NewLocation(cacheSvc, queueSvc))
 	locationSvc = location.NewValidationMiddleware(locationSvc)
 	logger := logger.New(config.AppCfg().LoggerType)
 	locationSvc = location.NewLoggingMiddleware(logger, locationSvc)

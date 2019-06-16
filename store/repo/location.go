@@ -1,18 +1,38 @@
 package repo
 
 import (
+	"encoding/json"
+
 	"github.com/rls/ping-api/store/model"
 	"github.com/rls/ping-api/svc/cache"
+	"github.com/rls/ping-api/svc/queue"
+	"github.com/rls/ping-api/utils/consts"
 )
 
 // Location ...
 type Location struct {
 	cacheSvc cache.ICacheService
+	queueSvc queue.IQueueService
 }
 
 // Save adds geo locations in cache
 func (l *Location) Save(key string, locations ...*model.Location) error {
-	return l.cacheSvc.GeoAdd(key, locations...)
+	if err := l.cacheSvc.GeoAdd(key, locations...); err != nil {
+		return err
+	}
+
+	ll, err := json.Marshal(locations)
+	if err == nil {
+		// ignore queueing error
+		l.queueSvc.Publish(&model.Queue{
+			Name:        consts.GeoLocationQueue,
+			Data:        ll,
+			ContentType: consts.JSONContent,
+			Durable:     false,
+			Exchange:    "",
+		})
+	}
+	return nil
 }
 
 // Get returns users locations
@@ -26,6 +46,6 @@ func (l *Location) Search(key string, radius *model.Radius) ([]*model.Location, 
 }
 
 // NewLocation returns a new location repo
-func NewLocation(cacheSvc cache.ICacheService) ILocation {
-	return &Location{cacheSvc}
+func NewLocation(cacheSvc cache.ICacheService, queueSvc queue.IQueueService) ILocation {
+	return &Location{cacheSvc, queueSvc}
 }

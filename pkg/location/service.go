@@ -23,16 +23,16 @@ type service struct {
 // Save method saves geo locations
 func (svc *service) Save(ctx context.Context, r *locationRequest) (*locationResponse, error) {
 	if err := svc.repo.Save(r.Referrer, r.Locations); err != nil {
-		return &locationResponse{nil, errors.NewErr(http.StatusBadRequest, err.Error())}, nil
+		return &locationResponse{nil, errors.NewErr(http.StatusInternalServerError, err.Error())}, nil
 	}
-	return &locationResponse{"Successfully saved locations", nil}, nil
+	return &locationResponse{"Successfully saved location", nil}, nil
 }
 
 // Get method returns users geo locations
 func (svc *service) Get(ctx context.Context, r *getLocationRequest) (*locationResponse, error) {
 	locations, err := svc.repo.Get(r.Referrer, r.UserIDs)
 	if err != nil {
-		return &locationResponse{nil, errors.NewErr(http.StatusBadRequest, err.Error())}, nil
+		return &locationResponse{nil, errors.NewErr(http.StatusInternalServerError, err.Error())}, nil
 	}
 	return &locationResponse{locations, nil}, nil
 }
@@ -43,8 +43,13 @@ func (svc *service) Search(ctx context.Context, r *searchLocationRequest) (*loca
 		&model.Radius{Lat: r.Lat, Lon: r.Lon, Val: r.Radius, Unit: r.Unit, Limit: r.Limit})
 
 	if err != nil {
-		return &locationResponse{nil, errors.NewErr(http.StatusBadRequest, err.Error())}, nil
+		return &locationResponse{nil, errors.NewErr(http.StatusInternalServerError, err.Error())}, nil
 	}
+
+	if len(locations) == 0 {
+		return &locationResponse{nil, errors.NewErr(http.StatusNotFound, errors.ErrNoDataFound)}, nil
+	}
+
 	return &locationResponse{locations, nil}, nil
 }
 

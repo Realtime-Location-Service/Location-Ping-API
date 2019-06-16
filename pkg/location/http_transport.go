@@ -44,7 +44,7 @@ func MakeHandler(svc Service) http.Handler {
 }
 
 func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
-	w.Header().Set("Content-Type", "application/json; utf8")
+	w.Header().Set("Content-Type", consts.JSONContent)
 	res := response.(*locationResponse)
 	if res.Err != nil {
 		w.WriteHeader(res.Err.StatusCode)

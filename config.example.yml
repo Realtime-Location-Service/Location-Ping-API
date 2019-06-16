@@ -6,8 +6,15 @@ app:
     idle_timeout: 30 # timeout in second
     cache_type: redis # redis/memcached
     logger_type: kitlogger # kitlogger/logrus
+    queue_type: rabbitmq # kitlogger/logrus
     name: "location-ping-api"
 redis:
     network: "tcp"
     addr: ":6379"
     password: "password123"
+rabbitmq:
+    protocol: "amqp"
+    port: 5672
+    host: 127.0.0.1
+    password: test_rabbit
+    username: rabbit
