@@ -58,11 +58,6 @@ const (
 	RabbitMQ QueueType = "rabbitmq"
 )
 
-// Queue Names
-const (
-	GeoLocationQueue = "geo_location_queue"
-)
-
 // content types
 const (
 	JSONContent = "application/json; utf8"

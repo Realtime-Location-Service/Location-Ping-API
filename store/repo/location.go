@@ -3,10 +3,10 @@ package repo
 import (
 	"encoding/json"
 
+	"github.com/rls/ping-api/pkg/config"
 	"github.com/rls/ping-api/store/model"
 	"github.com/rls/ping-api/svc/cache"
 	"github.com/rls/ping-api/svc/queue"
-	"github.com/rls/ping-api/utils/consts"
 )
 
 // Location ...
@@ -23,13 +23,14 @@ func (l *Location) Save(key string, locations ...*model.Location) error {
 
 	ll, err := json.Marshal(locations)
 	if err == nil {
+		c := config.LocationQCfg()
 		// ignore queueing error
 		l.queueSvc.Publish(&model.Queue{
-			Name:        consts.GeoLocationQueue,
+			Name:        c.Name,
 			Data:        ll,
-			ContentType: consts.JSONContent,
-			Durable:     false,
-			Exchange:    "",
+			ContentType: c.ContentType,
+			Durable:     c.Durable,
+			Exchange:    c.Exchange,
 		})
 	}
 	return nil

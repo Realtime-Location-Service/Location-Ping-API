@@ -35,6 +35,7 @@ func Init() {
 	}
 
 	LoadAppCfg()
+	LoadLocationQCfg()
 
 	if AppCfg().CacheType == consts.Redis {
 		LoadRedisCfg()
