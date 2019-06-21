@@ -15,6 +15,7 @@ type Queue struct {
 	Exchange      string
 	PrefetchCount int
 	PrefetchSize  int
+	TTL           int
 }
 
 // LocationQ ...
@@ -35,6 +36,7 @@ func LoadLocationQCfg() {
 	locationQ.Exchange = viper.GetString("queue.location.exchange")
 	locationQ.ContentType = consts.JSONContent
 	locationQ.Durable = viper.GetBool("queue.location.durable")
+	locationQ.TTL = viper.GetInt("queue.location.ttl")
 	locationQ.AutoAck = viper.GetBool("queue.location.auto_ack")
 	locationQ.PrefetchCount = viper.GetInt("queue.location.prefetch_count")
 	locationQ.PrefetchSize = viper.GetInt("queue.location.prefetch_size")

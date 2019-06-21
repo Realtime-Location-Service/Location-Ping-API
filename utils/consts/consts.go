@@ -62,3 +62,6 @@ const (
 const (
 	JSONContent = "application/json; utf8"
 )
+
+// DateTimeFormat ...
+const DateTimeFormat = "2006-01-02 15:04:05"

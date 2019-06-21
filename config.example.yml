@@ -26,3 +26,4 @@ queue:
         auto_ack: false
         prefetch_count: 1
         prefetch_size: 0
+        ttl: 6000

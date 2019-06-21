@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi"
 	kithttp "github.com/go-kit/kit/transport/http"
@@ -66,6 +67,8 @@ func decodeSaveLocationRequest(_ context.Context, r *http.Request) (i interface{
 	}
 	req.Referrer = r.Header.Get("RLS-Referrer")
 	req.Locations.UserID = req.UserID
+	req.Locations.Domain = req.Referrer
+	req.Locations.UpdatedAt = time.Now().UTC().Format(consts.DateTimeFormat)
 
 	return req, nil
 }

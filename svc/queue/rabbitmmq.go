@@ -40,7 +40,9 @@ func (r *RabbitMQ) Publish(qm *model.Queue) error {
 		false,      // delete when unused
 		false,      // exclusive
 		false,      // no-wait
-		nil,        // arguments
+		amqp.Table{
+			"x-message-ttl": qm.TTL,
+		},
 	)
 
 	if err != nil {

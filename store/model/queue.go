@@ -10,4 +10,5 @@ type Queue struct {
 	AutoAck       bool
 	PrefetchCount int
 	PrefetchSize  int
+	TTL           int
 }

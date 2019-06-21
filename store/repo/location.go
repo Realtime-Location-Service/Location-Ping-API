@@ -2,6 +2,7 @@ package repo
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/rls/ping-api/pkg/config"
 	"github.com/rls/ping-api/store/model"
@@ -25,13 +26,16 @@ func (l *Location) Save(key string, locations ...*model.Location) error {
 	if err == nil {
 		c := config.LocationQCfg()
 		// ignore queueing error
-		l.queueSvc.Publish(&model.Queue{
+		if err := l.queueSvc.Publish(&model.Queue{
 			Name:        c.Name,
 			Data:        ll,
 			ContentType: c.ContentType,
 			Durable:     c.Durable,
 			Exchange:    c.Exchange,
-		})
+			TTL:         c.TTL,
+		}); err != nil {
+			log.Println("error happened while publishing to queue reason: ", err)
+		}
 	}
 	return nil
 }
