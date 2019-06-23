@@ -1,6 +1,8 @@
 package queue
 
 import (
+	"log"
+
 	"github.com/rls/ping-api/pkg/config"
 	"github.com/streadway/amqp"
 )
@@ -12,11 +14,24 @@ var rabbitMQ = &RabbitMQ{}
 
 // connects to redis
 func (r *RabbitMQ) connect(cfg *config.RabbitMQ) error {
+	c := make(chan *amqp.Error)
+	go func() {
+		err, ok := <-c
+		if !ok {
+			// On normal shutdowns, the chan will be closed.
+			// so nothing to do
+			return
+		}
+		log.Println("reconnecting: " + err.Error())
+		r.connect(cfg)
+	}()
+
 	conn, err := amqp.Dial(cfg.URI)
 	if err != nil {
 		return err
 	}
 	r.Conn = conn
+	conn.NotifyClose(c)
 
 	return nil
 }
