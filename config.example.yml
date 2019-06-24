@@ -12,6 +12,7 @@ redis:
     network: "tcp"
     addr: ":6379"
     password: "password123"
+    read_timeout: 3 # timeout in sec
 rabbitmq:
     protocol: "amqp"
     port: 5672

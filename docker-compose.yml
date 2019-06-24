@@ -4,11 +4,13 @@ services:
   consul:
     image: consul:latest
     container_name: consul_dev
+    restart: always
     ports:
       - 8500:8500
   redis:
     image: 'bitnami/redis:latest'
     container_name: redis_dev
+    restart: always
     ports:
       - '6379:6379'
     environment:
@@ -19,6 +21,7 @@ services:
   rabbitmq:
     image: 'rabbitmq:latest'
     container_name: rabbitmq_dev
+    restart: always
     ports:
       - '5672:5672'
     environment:
