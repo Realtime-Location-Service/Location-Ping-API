@@ -1,6 +1,6 @@
 PROJECT = ping-api
 DOCKER_REPO = shourov
-VERSION = 0.0.1
+VERSION = 0.0.2
 # will be used to upload to docker hub
 docker:
 	docker build -t $(DOCKER_REPO)/$(PROJECT):$(VERSION) .

@@ -17,11 +17,12 @@ type Location struct {
 }
 
 // Save adds geo locations in cache
-func (l *Location) Save(key string, locations ...*model.Location) error {
+func (l *Location) Save(key string, locations []*model.Location) error {
 	if err := l.cacheSvc.GeoAdd(key, locations...); err != nil {
 		return err
 	}
 
+	locations = l.resolveRequiredInfo(key, locations)
 	ll, err := json.Marshal(locations)
 	if err == nil {
 		c := config.LocationQCfg()

@@ -6,7 +6,7 @@ import (
 
 // LocationSaver ..
 type LocationSaver interface {
-	Save(key string, locations ...*model.Location) error
+	Save(key string, locations []*model.Location) error
 	Get(key string, userIDs []string) (map[string]*model.Location, error)
 	Search(key string, location *model.Radius) ([]*model.Location, error)
 }

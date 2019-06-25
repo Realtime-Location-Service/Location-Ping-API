@@ -9,9 +9,8 @@ import (
 )
 
 type locationRequest struct {
-	UserID    string          `json:"user_id" valid:"required"`
-	Referrer  string          `json:"referrer" valid:"required"`
-	Locations *model.Location `json:"locations" valid:"required"`
+	Referrer  string            `json:"referrer" valid:"required"`
+	Locations []*model.Location `json:"locations" valid:"required"`
 }
 
 type getLocationRequest struct {
@@ -20,7 +19,8 @@ type getLocationRequest struct {
 }
 
 type searchLocationRequest struct {
-	model.Location
+	Lat      float64 `json:"lat" valid:"required,latitude"`
+	Lon      float64 `json:"lon" valid:"required,longitude"`
 	Radius   float64 `json:"radius" valid:"required"`
 	Unit     string  `json:"unit" valid:"radius_unit_tag~unit: invalid radius unit, required"`
 	Referrer string  `json:"referrer" valid:"required"`

@@ -39,45 +39,52 @@ func TestLocationsSave(t *testing.T) {
 
 	payloads := map[string][]byte{
 		"invalid_user_id": []byte(`{
-			"user_id": "",
-			"locations": {
-					"lat": 23.831146,
-					"lon": 90.425085
-				}
+			"locations":[{
+				"user_id": "",
+				"lat": 23.831146,
+				"lon": 90.425085,
+				"client_timestamp_utc": 10990809
+			}]
 		}`),
 		"invalid_locations": []byte(`{
-			"user_id": "1",
-			"locations": {
-					"lat": 23.831146
-				}
+			"locations":[{
+				"user_id": "1",
+				"lat": 23.831146,
+				"client_timestamp_utc": 10990809
+			}]
 		}`),
 		"invalid_referrer": []byte(`{
-			"user_id": "1",
-			"locations": {
-					"lat": 23.831146,
-					"lon": 90.425085
-				}
+			"locations": [{
+				"user_id": "1",
+				"lat": 23.831146,
+				"lon": 90.425085,
+				"client_timestamp_utc": 10990809
+			}]
 		}`),
-		"valid1": []byte(`{
-			"user_id": "1",
-			"locations": {
-					"lat": 23.831146,
-					"lon": 90.425085
-				}
+		"missing_client_timestamp_utc": []byte(`{
+			"locations": [{
+				"user_id": "1",
+				"lat": 23.831146,
+				"lon": 90.425085,
+			}]
 		}`),
-		"valid2": []byte(`{
-			"user_id": "2",
-			"locations": {
-					"lat": 23.834314,
-					"lon": 90.422827
-				}
-		}`),
-		"valid3": []byte(`{
-			"user_id": "3",
-			"locations": {
-					"lat": 23.835899,
-					"lon": 90.423106
-				}
+		"valid": []byte(`{
+			"locations":[{
+				"user_id": "1",
+				"lat": 23.831146,
+				"lon": 90.425085,
+				"client_timestamp_utc": 10990709
+			}, {
+				"user_id": "2",
+				"lat": 23.834314,
+				"lon": 90.422827,
+				"client_timestamp_utc": 10990712
+			}, {
+				"user_id": "3",
+				"lat": 23.835899,
+				"lon": 90.423106,
+				"client_timestamp_utc": 10990715
+			}]
 		}`),
 	}
 
@@ -91,9 +98,8 @@ func TestLocationsSave(t *testing.T) {
 		{"POST", url, "invalid_user_id_test", payloads["invalid_user_id"], http.StatusBadRequest},
 		{"POST", url, "invalid_locations_test", payloads["invalid_locations"], http.StatusBadRequest},
 		{"POST", url, "invalid_referrer_test", payloads["invalid_referrer"], http.StatusBadRequest},
-		{"POST", url, "valid_payload_test", payloads["valid1"], http.StatusOK},
-		{"POST", url, "valid_payload_test", payloads["valid2"], http.StatusOK},
-		{"POST", url, "valid_payload_test", payloads["valid3"], http.StatusOK},
+		{"POST", url, "missing_client_timestamp_utc", payloads["missing_client_timestamp_utc"], http.StatusBadRequest},
+		{"POST", url, "valid_payload_test", payloads["valid"], http.StatusOK},
 	} {
 		req, _ := http.NewRequest(testcase.method, testcase.url, bytes.NewBuffer(testcase.body))
 
