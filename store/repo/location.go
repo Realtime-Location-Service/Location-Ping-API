@@ -43,7 +43,7 @@ func (l *Location) Save(key string, locations []*model.Location) error {
 
 // Get returns users locations
 func (l *Location) Get(key string, userIDs []string) (map[string]*model.Location, error) {
-	return l.cacheSvc.Get(key, getUniqueIDs(userIDs)...)
+	return l.cacheSvc.Get(key, l.getUniqueIDs(userIDs)...)
 }
 
 // Search returns users locations within radius
