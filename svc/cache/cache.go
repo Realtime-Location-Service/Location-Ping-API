@@ -10,6 +10,7 @@ type ICacheService interface {
 	Get(key string, userIDs ...string) (map[string]*model.Location, error)
 	GeoAdd(key string, locations ...*model.Location) error
 	Search(key string, radius *model.Radius) ([]*model.Location, error)
+	SaveLocationTimestamp(key string, location *model.Location) error
 }
 
 // NewCacheService ...

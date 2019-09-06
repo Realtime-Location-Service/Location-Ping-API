@@ -6,6 +6,8 @@ import (
 	"github.com/rls/ping-api/pkg/config"
 	"github.com/rls/ping-api/store/model"
 	"github.com/rls/ping-api/utils/errors"
+	"github.com/rls/ping-api/utils/hash"
+	"strconv"
 )
 
 // Redis ...
@@ -19,14 +21,23 @@ func (r *Redis) Get(key string, userIDs ...string) (map[string]*model.Location, 
 	if err != nil {
 		return nil, errors.Wrap(err, errors.ErrGettingGeoLocation)
 	}
-	return transformToUserLocation(userIDs, geoPos), nil
+	return r.transformToUserLocation(key, userIDs, geoPos), nil
 }
 
 // GeoAdd adds locations in redis
 // in case of error returns error with stack trace
 func (r *Redis) GeoAdd(key string, locations ...*model.Location) error {
-	if cmd := r.redis.GeoAdd(key, transformToGeoLocation(locations...)...); cmd.Err() != nil {
+	if cmd := r.redis.GeoAdd(key, r.transformToGeoLocation(locations...)...); cmd.Err() != nil {
 		return errors.Wrap(cmd.Err(), errors.ErrSavingGeoLocation)
+	}
+	return nil
+}
+
+// SaveLocationTimestamp keeps track of latest
+// location's client timestamp
+func (r *Redis) SaveLocationTimestamp(key string, location *model.Location) error {
+	if cmd := r.redis.HSet(hash.GetMD5Hash(key), location.UserID, location.ClientTimestampUTC); cmd.Err() != nil {
+		return errors.Wrap(cmd.Err(), errors.ErrSavingGeoLocationTimestamp)
 	}
 	return nil
 }
@@ -46,7 +57,14 @@ func (r *Redis) Search(key string, radius *model.Radius) ([]*model.Location, err
 	if err != nil {
 		return nil, errors.Wrap(err, errors.ErrGeoRadiusSearch)
 	}
-	return transform(res), nil
+	return r.transform(res), nil
+}
+
+// get timestamp of location
+func (r *Redis) getLocationTimestamp(key, userID string) int64 {
+	timestamp := r.redis.HGet(hash.GetMD5Hash(key), userID).Val()
+	ts, _ := strconv.ParseInt(timestamp, 10, 64)
+	return ts
 }
 
 // NewRedis returns redis client

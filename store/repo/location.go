@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
+	"sort"
+
 	"github.com/rls/ping-api/pkg/config"
 	"github.com/rls/ping-api/store/model"
 	"github.com/rls/ping-api/svc/cache"
@@ -18,7 +20,16 @@ type Location struct {
 
 // Save adds geo locations in cache
 func (l *Location) Save(key string, locations []*model.Location) error {
-	if err := l.cacheSvc.GeoAdd(key, locations...); err != nil {
+	// sort locations by timestamp
+	// we're picking the latest location
+	sort.Slice(locations, func(i, j int) bool {
+		return locations[i].ClientTimestampUTC > locations[j].ClientTimestampUTC
+	})
+
+	if err := l.cacheSvc.GeoAdd(key, locations[0]); err != nil {
+		return err
+	}
+	if err := l.cacheSvc.SaveLocationTimestamp(key, locations[0]); err != nil {
 		return err
 	}
 	return nil
