@@ -25,6 +25,10 @@ func (svc *service) Save(ctx context.Context, r *locationRequest) (*locationResp
 	if err := svc.repo.Save(r.Referrer, r.Locations); err != nil {
 		return &locationResponse{nil, errors.NewErr(http.StatusInternalServerError, err.Error())}, nil
 	}
+
+	if err := svc.repo.PublishLocation(r.Referrer, r.Locations); err != nil {
+		return &locationResponse{nil, errors.NewErr(http.StatusInternalServerError, err.Error())}, nil
+	}
 	return &locationResponse{"Successfully saved location", nil}, nil
 }
 

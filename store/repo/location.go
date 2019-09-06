@@ -21,23 +21,6 @@ func (l *Location) Save(key string, locations []*model.Location) error {
 	if err := l.cacheSvc.GeoAdd(key, locations...); err != nil {
 		return err
 	}
-
-	locations = l.resolveRequiredInfo(key, locations)
-	ll, err := json.Marshal(locations)
-	if err == nil {
-		c := config.LocationQCfg()
-		// ignore queueing error
-		if err := l.queueSvc.Publish(&model.Queue{
-			Name:        c.Name,
-			Data:        ll,
-			ContentType: c.ContentType,
-			Durable:     c.Durable,
-			Exchange:    c.Exchange,
-			TTL:         c.TTL,
-		}); err != nil {
-			log.Println("error happened while publishing to queue reason: ", err)
-		}
-	}
 	return nil
 }
 
@@ -49,6 +32,28 @@ func (l *Location) Get(key string, userIDs []string) (map[string]*model.Location
 // Search returns users locations within radius
 func (l *Location) Search(key string, radius *model.Radius) ([]*model.Location, error) {
 	return l.cacheSvc.Search(key, radius)
+}
+
+// PublishLocation queue locations for analysis
+func (l *Location) PublishLocation(key string, locations []*model.Location) error {
+	locations = l.resolveRequiredInfo(key, locations)
+	ll, err := json.Marshal(locations)
+	if err != nil {
+		return err
+	}
+
+	c := config.LocationQCfg()
+	if err := l.queueSvc.Publish(&model.Queue{
+		Name:        c.Name,
+		Data:        ll,
+		ContentType: c.ContentType,
+		Durable:     c.Durable,
+		Exchange:    c.Exchange,
+		TTL:         c.TTL,
+	}); err != nil {
+		log.Println("error happened while publishing to queue reason: ", err)
+	}
+	return err
 }
 
 // NewLocation returns a new location repo
